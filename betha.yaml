@@ -143,3 +143,33 @@ spec:
       port: 8888
   selector:
     app: d
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: e
+spec:
+  selector:
+    matchLabels:
+      app: e
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: ""
+      labels:
+        app: e
+        version: v1
+    spec:
+      containers:
+        - name: e
+          image: lucasponce/client:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+          securityContext:
+            privileged: false
+          env:
+            - name: SERVER_URL
+              value: "http://b.betha:8888/status,http://d.betha:8888/status"
